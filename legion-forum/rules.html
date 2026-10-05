@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Правила и FAQ — LEGION</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="index.html">
+      <span class="crest">L</span>
+      <span class="brand-txt"><b>LEGION</b><span>CSS v34 Bhop Community</span></span>
+    </a>
+    <nav class="mainnav">
+      <a href="index.html">Форум</a>
+      <a href="files.html">Файлы</a>
+      <a href="rules.html" class="is-on">Правила</a>
+    </nav>
+    <form class="searchbox" id="headSearch">
+      <input id="headSearchInput" type="search" placeholder="Поиск по темам...">
+      <button title="Найти">&#128269;</button>
+    </form>
+    <div class="userbox">
+      <span class="avatar">L</span>
+      <span class="who"><b>login</b><span>Участник</span></span>
+      <a class="btn btn-sm" href="new.html">+ Новая тема</a>
+    </div>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="wrap in">
+    <nav class="crumbs"><a href="index.html">Форум</a><i>/</i><span class="cur">Правила и FAQ</span></nav>
+    <span class="online-now" data-online></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="layout">
+
+    <div class="col">
+      <section class="panel">
+        <div class="panel-head"><h2>Правила форума</h2></div>
+        <div class="panel-body">
+          <div class="alert">
+            Форум существует ради обсуждения бхопа на CSS v34. Задача — обмениваться
+            опытом и настройками, а не спорить. Правил немного, и они простые.
+          </div>
+
+          <ol class="rules">
+            <li><b>Уважение к участникам.</b> Оскорбления, спам и травля — бан без разговоров.</li>
+            <li><b>Темы по делу.</b> Одна тема — один вопрос. Не открывай 10 тем по одной и той же проблеме,
+                сначала поищи в <a href="index.html">поиске форума</a>.</li>
+            <li><b>Никакой рекламы.</b> Ссылка на свой сервер в каждом втором посте — это реклама.</li>
+            <li><b>Файлы — только свои.</b> Выкладывай то, что сделал сам, или то, что freely распространяется.
+                Не перезаливай чужие архивы и не выдавай их за свои.</li>
+            <li><b>Честная маркировка.</b> Если сборка содержит сторонние компоненты — пиши об этом в теме.</li>
+            <li><b>Только для себя и приватных серверов.</b> Всё, что лежит в разделе файлов, предназначено
+                для оффлайна и серверов без античита. На публичных серверах с защитой это приведёт к бану —
+                и виноват будешь один.</li>
+            <li><b>Бэкапы.</b> Прежде чем менять файлы игры, сохрани оригиналы. Форум не восстанавливает твою установку.</li>
+          </ol>
+
+          <div class="alert warn">
+            <b>Дисклеймер.</b> Это независимый демо-проект. Он не связан с Valve, Steam и не с GameBanana.
+            Торговые марки принадлежат их владельцам.
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="faq">
+        <div class="panel-head"><h2>FAQ</h2><span class="tail dim">частые вопросы новичков</span></div>
+        <div class="panel-body">
+          <div class="faq-q">1. Какая версия игры нужна?</div>
+          <p>Только legacy-ветка <b>Steam beta v34</b> (build 3442). На более поздних сборках
+             движок устроен иначе, и большая часть настроек просто не применится.</p>
+
+          <div class="faq-q">2. Игра не запускается после установки, что делать?</div>
+          <p>Верни <code>engine.dll.bak</code> (или пересобери папку <code>cstrike/bin</code>).
+             Почти всегда причина — антивирус, удаливший файл, или установка поверх уже
+             пропатченной копии.</p>
+
+          <div class="faq-q">3. Какой тикрейт лучше для тренировок?</div>
+          <p>500 tick на локальном сервере. Под 66 tick бхоп невозможен в принципе — там
+             физика не успевает обработать прыжок, и тайминги «плывут».</p>
+
+          <div class="faq-q">4. Сенса 400 или 800?</div>
+          <p>Начни с 400 и не меняй её минимум месяц. Ровность руки важнее амплитуды:
+             подробный разбор в теме <a href="thread.html?id=t-mouse">про мышь</a>.</p>
+
+          <div class="faq-q">5. Как разобрать свою демку?</div>
+          <p>Открой демку, поставь скорость 0.25 и смотри на вектор движения. Подробности —
+             в теме <a href="thread.html?id=t-demo-read">«Как читать демку»</a>.</p>
+
+          <div class="faq-q">6. Куда загрузить свою сборку?</div>
+          <p>В <a href="files.html">раздел файлов</a>: перетащи архив в зону загрузки, он появится
+             в списке, а кнопка «↓ Скачать» отдаст его байт в байт. Всё хранится только
+             в твоём браузере.</p>
+
+          <div class="faq-q">7. Можно ли использовать это на публичном сервере?</div>
+          <p>Нет. Там работает античит, использование подобного приведёт к блокировке аккаунта.
+             Только оффлайн и приватные серверы.</p>
+
+          <div class="faq-q">8. Можно перезалить чужой файл?</div>
+          <p>Можно, но с указанием автора и прямой ссылки на оригинал. Перезаливка без
+             указания авторства — нарушение правил, тема удаляется.</p>
+        </div>
+      </section>
+    </div>
+
+    <aside class="col side">
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Разделы форума</h3></div>
+        <div class="panel-body">
+          <ul class="stat-list" id="sideBoards"></ul>
+        </div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>О статистике</h3></div>
+        <div class="panel-body"><ul class="stat-list" data-stats></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Сейчас на сайте</h3></div>
+        <div class="panel-body"><ul class="online-list" data-online-list></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Последние темы</h3></div>
+        <div class="panel-body" data-latest></div>
+      </section>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap in">
+    <span>© <span data-year></span> LEGION — CSS v34 Bhop Community. Демо-проект.</span>
+    <span class="links">
+      <a href="index.html">Форум</a>
+      <a href="files.html">Файлы</a>
+      <a href="rules.html#faq">FAQ</a>
+    </span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  var L = window.L;
+  L.q('#sideBoards').innerHTML = L.boards().filter(function (b) { return !b.parent; })
+    .map(function (b) {
+      var l = L.threadsDeep(b.id);
+      return '<li><span>' + b.icon + ' <a href="' + (b.url || ('board.html?id=' + b.id)) + '">' +
+             L.esc(b.name) + '</a></span><b>' + l.length + '</b></li>';
+    }).join('');
+})();
+</script>
+</body>
+</html>

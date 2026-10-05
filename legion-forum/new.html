@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Новая тема — LEGION</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="index.html">
+      <span class="crest">L</span>
+      <span class="brand-txt"><b>LEGION</b><span>CSS v34 Bhop Community</span></span>
+    </a>
+    <nav class="mainnav">
+      <a href="index.html" class="is-on">Форум</a>
+      <a href="files.html">Файлы</a>
+      <a href="rules.html">Правила</a>
+    </nav>
+    <form class="searchbox" id="headSearch">
+      <input id="headSearchInput" type="search" placeholder="Поиск по темам...">
+      <button title="Найти">&#128269;</button>
+    </form>
+    <div class="userbox">
+      <span class="avatar">L</span>
+      <span class="who"><b>login</b><span>Участник</span></span>
+      <a class="btn btn-sm" href="new.html">+ Новая тема</a>
+    </div>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="wrap in">
+    <nav class="crumbs"><a href="index.html">Форум</a><i>/</i><span class="cur">Новая тема</span></nav>
+    <span class="online-now" data-online></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="layout">
+
+    <div class="col">
+      <section class="panel">
+        <div class="panel-head"><h2>Создание темы</h2></div>
+        <div class="panel-body">
+          <div class="alert">
+            Ты вошёл как <b>login</b>. Тема сохранится локально в этом браузере и появится
+            в разделе сразу после создания.
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label for="boardSel">Раздел</label>
+              <select id="boardSel"></select>
+            </div>
+            <div class="field">
+              <label for="titleInput">Заголовок темы</label>
+              <input class="input" id="titleInput" maxlength="90" placeholder="Например: теряю скорость на 9-м префиксе">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="bodyInput">Сообщение</label>
+            <textarea class="textarea" id="bodyInput" placeholder="Опиши вопрос или тему подробно: версия игры, тресса, тикрейт, что уже пробовал."></textarea>
+            <div class="hint">
+              Поддерживается: <code>[b]жирный[/b]</code>, <code>`код`</code>,
+              <code>[spoiler]...</code>, <code>[quote="ник"]цитата[/quote]</code>.
+              Пустая строка = новый абзац.
+            </div>
+          </div>
+
+          <div class="form-row">
+            <button class="btn btn-primary" id="createBtn">Создать тему</button>
+            <button class="btn" id="previewBtn" type="button">Предпросмотр</button>
+            <a class="btn" href="index.html">Отмена</a>
+          </div>
+
+          <div class="panel" id="previewBox" style="display:none;margin:16px 0 0">
+            <div class="panel-head"><h3>Предпросмотр</h3></div>
+            <div class="panel-body"><div class="post-body" id="previewBody"></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="col side">
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Как писать темы</h3></div>
+        <div class="panel-body">
+          <ul class="rules" style="margin:0;padding-left:18px">
+            <li>Ищи ответы через поиск форума — почти всё уже разобрано.</li>
+            <li>Пиши версию игры, тикрейт и конкретную трассу.</li>
+            <li>Прикладывай демку, если просишь разбор.</li>
+            <li>Не создавай тему ради темы — потом её придётся удалять.</li>
+          </ul>
+        </div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Сейчас на сайте</h3></div>
+        <div class="panel-body"><ul class="online-list" data-online-list></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Последние темы</h3></div>
+        <div class="panel-body" data-latest></div>
+      </section>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap in">
+    <span>© <span data-year></span> LEGION — CSS v34 Bhop Community. Демо-проект.</span>
+    <span class="links">
+      <a href="rules.html">Правила</a>
+      <a href="rules.html#faq">FAQ</a>
+      <a href="files.html">Файлы</a>
+    </span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/format.js"></script>
+<script>
+(function () {
+  var L = window.L;
+
+  function fillBoards() {
+    var sel = L.q('#boardSel'), groups = {};
+    L.boards().forEach(function (b) {
+      if (b.url) return;
+      var key = b.parent ? (L.board(b.parent) || {}).name || 'Разное' : 'Разделы';
+      (groups[key] = groups[key] || []).push(b);
+    });
+    sel.innerHTML = Object.keys(groups).map(function (k) {
+      return '<optgroup label="' + L.esc(k) + '">' + groups[k].map(function (b) {
+        return '<option value="' + L.esc(b.id) + '">' + b.icon + ' ' + L.esc(b.name) + '</option>';
+      }).join('') + '</optgroup>';
+    }).join('');
+  }
+
+  fillBoards();
+  var wanted = new URLSearchParams(location.search).get('board');
+  if (wanted) L.q('#boardSel').value = wanted;
+
+  L.q('#previewBtn').addEventListener('click', function () {
+    var box = L.q('#previewBox');
+    box.style.display = box.style.display === 'none' ? '' : 'none';
+    L.q('#previewBody').innerHTML = window.LegionFormat(L.q('#bodyInput').value) || '<span class="muted">Пусто</span>';
+  });
+
+  L.q('#createBtn').addEventListener('click', function () {
+    var title = L.q('#titleInput').value.trim();
+    var body = L.q('#bodyInput').value.trim();
+    var board = L.q('#boardSel').value;
+
+    if (title.length < 5) return L.toast('Заголовок слишком короткий', 'err');
+    if (body.length < 15) return L.toast('Слишком короткое сообщение', 'err');
+
+    var t = L.createThread(board, title, window.LegionFormat(body));
+    L.toast('Тема создана', 'ok');
+    setTimeout(function () { location.href = 'thread.html?id=' + encodeURIComponent(t.id); }, 600);
+  });
+
+  L.q('#titleInput').focus();
+})();
+</script>
+</body>
+</html>

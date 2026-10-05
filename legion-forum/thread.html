@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тема — LEGION</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="index.html">
+      <span class="crest">L</span>
+      <span class="brand-txt"><b>LEGION</b><span>CSS v34 Bhop Community</span></span>
+    </a>
+    <nav class="mainnav">
+      <a href="index.html" class="is-on">Форум</a>
+      <a href="files.html">Файлы</a>
+      <a href="rules.html">Правила</a>
+    </nav>
+    <form class="searchbox" id="headSearch">
+      <input id="headSearchInput" type="search" placeholder="Поиск по темам...">
+      <button title="Найти">&#128269;</button>
+    </form>
+    <div class="userbox">
+      <span class="avatar">L</span>
+      <span class="who"><b>login</b><span>Участник</span></span>
+      <a class="btn btn-sm" href="new.html">+ Новая тема</a>
+    </div>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="wrap in">
+    <nav class="crumbs" id="crumbs"></nav>
+    <span class="online-now" data-online></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="layout">
+
+    <div class="col">
+      <section class="panel">
+        <div class="panel-head">
+          <h2 id="threadTitle">Тема</h2>
+          <span class="tail" id="threadTools"></span>
+        </div>
+        <div class="panel-body tight" id="posts"></div>
+      </section>
+
+      <section class="panel" id="replyPanel">
+        <div class="panel-head"><h2>Ответить в теме</h2></div>
+        <div class="panel-body">
+          <div class="alert warn" id="lockedNote" style="display:none">
+            Тема закрыта — новые сообщения не принимаются.
+          </div>
+          <div class="field">
+            <label for="replyText">Сообщение</label>
+            <textarea class="textarea" id="replyText" placeholder="Расскажи, как получилось на трассе..."></textarea>
+            <div class="hint">
+              Поддерживается разметка: <code>[b]жирный[/b]</code>, <code>`код`</code>,
+              <code>[spoiler]...</code> и <code>[quote="ник"]цитата[/quote]</code>.
+              Пустая строка = новый абзац.
+            </div>
+          </div>
+          <div class="form-row">
+            <button class="btn btn-primary" id="sendBtn">Отправить</button>
+            <button class="btn" id="previewBtn" type="button">Предпросмотр</button>
+            <button class="btn" id="clearBtn" type="button">Очистить</button>
+          </div>
+          <div class="panel" id="previewBox" style="display:none;margin:16px 0 0">
+            <div class="panel-head"><h3>Предпросмотр</h3></div>
+            <div class="panel-body"><div class="post-body" id="previewBody"></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="col side">
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>О теме</h3></div>
+        <div class="panel-body"><ul class="stat-list" id="threadStats"></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Сейчас на сайте</h3></div>
+        <div class="panel-body"><ul class="online-list" data-online-list></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Последние темы</h3></div>
+        <div class="panel-body" data-latest></div>
+      </section>
+      <div class="adslot">Место под баннер<br>320 × 100</div>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap in">
+    <span>© <span data-year></span> LEGION — CSS v34 Bhop Community. Демо-проект.</span>
+    <span class="links">
+      <a href="rules.html">Правила</a>
+      <a href="rules.html#faq">FAQ</a>
+      <a href="files.html">Файлы</a>
+      <span data-storage-note></span>
+    </span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/format.js"></script>
+<script>
+(function () {
+  var L = window.L, F = L.forum;
+  var format = window.LegionFormat;
+
+  var threadId = new URLSearchParams(location.search).get('id');
+
+  function postHtml(t, p, i) {
+    var mine = p.author === F.you;
+    var liked = L.hasThanks(p.id);
+    return '<article class="post" data-post="' + L.esc(p.id) + '">' +
+      '<div class="post-side">' +
+        '<div class="avatar lg">' + L.esc(p.author.charAt(0).toUpperCase()) + '</div>' +
+        '<div style="margin-top:8px">' +
+          '<div class="name">' + L.esc(p.author) + '</div>' +
+          '<div class="role">' + (mine ? 'вы' : 'участник') + '</div>' +
+        '</div>' +
+        '<div class="idnum">#' + (i + 1) + '</div>' +
+      '</div>' +
+      '<div class="post-main">' +
+        '<div class="post-top">' +
+          '<span>' + L.esc(L.ftime(p.created)) + '</span>' +
+          '<span class="muted">·</span><span>' + L.esc(L.ago(p.created)) + '</span>' +
+          '<span class="when">#' + (i + 1) + '</span>' +
+        '</div>' +
+        '<div class="post-body">' + p.body + '</div>' +
+        '<div class="post-acts">' +
+          '<button class="thanks' + (liked ? ' has' : '') + '" data-thanks="' + L.esc(p.id) + '">&#128077; Спасибо' +
+            (p.thanks ? ' <b>' + p.thanks + '</b>' : '') + '</button>' +
+          '<button class="btn btn-sm" data-quote="' + L.esc(p.id) + '">Цитировать</button>' +
+          (mine ? '<button class="btn btn-sm btn-danger" data-del="' + L.esc(p.id) + '">Удалить</button>' : '') +
+        '</div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function render() {
+    var t = L.thread(threadId);
+    if (!t) {
+      L.q('#threadTitle').textContent = 'Тема не найдена';
+      L.q('#posts').innerHTML = '<div class="empty"><div class="big">&#129300;</div><p>Тема удалена или не существует. <a href="index.html">На главную</a></p></div>';
+      L.q('#replyPanel').classList.add('hidden');
+      return;
+    }
+
+    document.title = t.title + ' — LEGION';
+    L.q('#threadTitle').innerHTML =
+      (t.pinned ? '<span class="badge badge-pin">Закреплено</span> ' : '') +
+      (t.locked ? '<span class="badge">Закрыто</span> ' : '') +
+      L.esc(t.title);
+
+    L.q('#threadTools').innerHTML =
+      '<span class="dim">' + t.posts.length + ' сообщ. · ' + L.num(t.views) + ' просм.</span> ' +
+      '<button class="btn btn-sm btn-danger" id="delThread">Удалить тему</button>';
+
+    L.q('#posts').innerHTML = t.posts.map(function (p, i) { return postHtml(t, p, i); }).join('');
+
+    var b = L.board(t.board);
+    var path = L.boardPath(t.board);
+    L.q('#crumbs').innerHTML = '<a href="index.html">Форум</a><i>/</i>' +
+      path.map(function (p, i) {
+        return i === path.length - 1
+          ? '<a href="board.html?id=' + L.esc(p.id) + '">' + L.esc(p.name) + '</a><i>/</i>'
+          : '<a href="board.html?id=' + L.esc(p.id) + '">' + L.esc(p.name) + '</a><i>/</i>';
+      }).join('') +
+      '<span class="cur">' + L.esc(t.title) + '</span>';
+
+    L.q('#threadStats').innerHTML = [
+      ['Раздел', b ? '<a href="board.html?id=' + L.esc(t.board) + '">' + L.esc(b.name) + '</a>' : '—'],
+      ['Автор', L.esc(t.author)],
+      ['Создана', L.esc(L.ftime(t.created))],
+      ['Сообщений', t.posts.length],
+      ['Просмотров', L.num(t.views)],
+      ['Последняя активность', L.esc(L.ago(t.lastSeen))]
+    ].map(function (r) { return '<li><span>' + r[0] + '</span><b>' + r[1] + '</b></li>'; }).join('');
+
+    if (t.locked) {
+      L.q('#lockedNote').style.display = '';
+      L.q('#replyText').disabled = true;
+      L.q('#sendBtn').disabled = true;
+    }
+
+    /* кнопки внутри постов */
+    L.qa('[data-thanks]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        L.toggleThanks(btn.getAttribute('data-thanks'));
+        render();
+      });
+    });
+    L.qa('[data-quote]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var pid = btn.getAttribute('data-quote');
+        var p = t.posts.filter(function (x) { return x.id === pid; })[0];
+        if (!p) return;
+        var plain = p.body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 240);
+        var ta = L.q('#replyText');
+        ta.value = (ta.value ? ta.value + '\n\n' : '') + '[quote="' + p.author + '"]' + plain + '[/quote]\n';
+        ta.focus();
+        L.toast('Цитата вставлена в форму ответа');
+      });
+    });
+    L.qa('[data-del]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (L.delPost(t.id, btn.getAttribute('data-del'))) {
+          L.toast('Сообщение удалено');
+          render();
+        }
+      });
+    });
+
+    var del = L.q('#delThread');
+    if (del) del.addEventListener('click', function () {
+      if (L.delThread(t.id)) {
+        L.toast('Тема удалена');
+        setTimeout(function () { location.href = 'board.html?id=' + encodeURIComponent(t.board); }, 700);
+      }
+    });
+  }
+
+  /* ---------- форма ответа ---------- */
+  L.q('#sendBtn').addEventListener('click', function () {
+    var ta = L.q('#replyText');
+    if (!ta.value.trim()) return L.toast('Пустое сообщение не отправить', 'err');
+    var t = L.thread(threadId);
+    if (!t || t.locked) return L.toast('Тема закрыта', 'err');
+    L.reply(threadId, format(ta.value));
+    ta.value = '';
+    L.q('#previewBox').style.display = 'none';
+    L.toast('Ответ отправлен', 'ok');
+    render();
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  });
+
+  L.q('#previewBtn').addEventListener('click', function () {
+    var box = L.q('#previewBox');
+    box.style.display = box.style.display === 'none' ? '' : 'none';
+    L.q('#previewBody').innerHTML = format(L.q('#replyText').value) || '<span class="muted">Пусто</span>';
+  });
+
+  L.q('#clearBtn').addEventListener('click', function () {
+    L.q('#replyText').value = '';
+    L.q('#previewBox').style.display = 'none';
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

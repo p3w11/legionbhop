@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LEGION — форум CSS v34 Bhop</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="index.html">
+      <span class="crest">L</span>
+      <span class="brand-txt"><b>LEGION</b><span>CSS v34 Bhop Community</span></span>
+    </a>
+    <nav class="mainnav">
+      <a href="index.html" class="is-on">Форум</a>
+      <a href="files.html">Файлы</a>
+      <a href="rules.html">Правила</a>
+    </nav>
+    <form class="searchbox" id="headSearch">
+      <input id="headSearchInput" type="search" placeholder="Поиск по темам...">
+      <button title="Найти">&#128269;</button>
+    </form>
+    <div class="userbox">
+      <span class="avatar">L</span>
+      <span class="who"><b>login</b><span>Участник</span></span>
+      <a class="btn btn-sm" href="new.html">+ Новая тема</a>
+    </div>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="wrap in">
+    <nav class="crumbs"><a href="index.html">Форум</a></nav>
+    <span class="online-now" data-online></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div>
+      <h1>ФОРУМ · LEGION</h1>
+      <p id="forumDesc"></p>
+    </div>
+    <div class="hero-acts">
+      <a class="btn btn-primary" href="new.html">+ Создать тему</a>
+      <a class="btn" href="files.html">&#128228; Загрузить файл</a>
+    </div>
+  </section>
+
+  <div class="layout">
+
+    <!-- ---------- разделы ---------- -->
+    <div class="col">
+      <div id="searchBlock" class="hidden">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Результаты поиска</h2>
+            <span class="tail" id="searchCount"></span>
+          </div>
+          <div class="panel-body tight" id="searchList"></div>
+        </section>
+      </div>
+
+      <div id="forumBlock">
+        <section class="panel">
+          <div class="panel-head">
+            <h2>Разделы</h2>
+            <span class="tail dim">темы · сообщения · последнее</span>
+          </div>
+          <div class="panel-body tight">
+            <div class="row head">
+              <div></div>
+              <div>Раздел</div>
+              <div class="num">Темы</div>
+              <div class="num">Сообщ.</div>
+              <div>Последнее сообщение</div>
+            </div>
+            <div id="boards"></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Свежие темы</h2>
+          <span class="tail"><a href="board.html?id=bhop">Все темы &rarr;</a></span>
+        </div>
+        <div class="panel-body tight" id="latest"></div>
+      </section>
+    </div>
+
+    <!-- ---------- сайдбар ---------- -->
+    <aside class="col side">
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>О статистике</h3></div>
+        <div class="panel-body">
+          <ul class="stat-list" data-stats></ul>
+        </div>
+      </section>
+
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Сейчас на сайте</h3></div>
+        <div class="panel-body">
+          <ul class="online-list" data-online-list></ul>
+        </div>
+      </section>
+
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Последние темы</h3></div>
+        <div class="panel-body" data-latest></div>
+      </section>
+
+      <div class="adslot">Место под баннер<br>320 × 100</div>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap in">
+    <span>© <span data-year></span> LEGION — CSS v34 Bhop Community. Демо-проект.</span>
+    <span class="links">
+      <a href="rules.html">Правила</a>
+      <a href="rules.html#faq">FAQ</a>
+      <a href="files.html">Файлы</a>
+      <span data-storage-note></span>
+    </span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  var L = window.L, F = L.forum;
+  L.q('#forumDesc').textContent = F.desc;
+
+  var GROUPS = [
+    { title: 'Bhop',            ids: ['bhop'] },
+    { title: 'Контент и файлы', ids: ['content', 'files', 'archive'] },
+    { title: 'Общение и помощь',ids: ['talk', 'help'] }
+  ];
+
+  function boardHref(b) { return b.url || ('board.html?id=' + b.id); }
+
+  function counts(id) {
+    var list = L.threadsDeep(id);
+    var posts = list.reduce(function (a, t) { return a + t.posts.length; }, 0);
+    return { topics: list.length, posts: posts };
+  }
+
+  function lastOf(id) {
+    var list = L.threadsDeep(id);
+    if (!list.length) return '<span class="muted">пусто</span>';
+    var t = list[0];
+    var p = t.posts[t.posts.length - 1];
+    return '<a class="t" href="thread.html?id=' + L.esc(t.id) + '">' + L.esc(t.title) + '</a>' +
+           '<span class="a">' + L.esc(p ? p.author : t.author) + ' · ' + L.esc(L.ago(t.lastSeen)) + '</span>';
+  }
+
+  function subsOf(id) {
+    return L.boards().filter(function (b) { return b.parent === id; });
+  }
+
+  function renderBoards() {
+    var html = '';
+    GROUPS.forEach(function (g) {
+      html += '<h3 class="cat-title">' + L.esc(g.title) + '</h3>';
+      g.ids.forEach(function (id) {
+        var b = L.board(id);
+        if (!b) return;
+        var c = counts(id), subs = subsOf(id);
+        var chips = subs.map(function (s) {
+          return '<a class="sub-link" href="' + boardHref(s) + '">' + L.esc(s.icon) + ' ' + L.esc(s.name) + '</a>';
+        }).join('');
+        html +=
+          '<div class="row">' +
+            '<div class="board-ico">' + b.icon + '</div>' +
+            '<div>' +
+              '<div class="board-name"><a href="' + boardHref(b) + '">' + L.esc(b.name) + '</a></div>' +
+              '<div class="board-desc">' + L.esc(b.desc) + '</div>' +
+              (chips ? '<div class="board-subs">' + chips + '</div>' : '') +
+            '</div>' +
+            '<div class="num"><b>' + c.topics + '</b>тем</div>' +
+            '<div class="num"><b>' + c.posts + '</b>сообщ.</div>' +
+            '<div class="lastpost">' + lastOf(id) + '</div>' +
+          '</div>';
+      });
+    });
+    L.q('#boards').innerHTML = html;
+  }
+
+  function renderLatest() {
+    L.q('#latest').innerHTML = L.latest(8).map(function (t) {
+      return threadRow(t);
+    }).join('');
+  }
+
+  function lastCell(t) {
+    var p = t.posts[t.posts.length - 1];
+    return '<span class="a">' + L.esc(p ? p.author : t.author) + ' · ' + L.esc(L.ago(t.lastSeen)) + '</span>';
+  }
+
+  function threadRow(t) {
+    var badges = '';
+    if (t.pinned) badges += '<span class="badge badge-pin">Закреплено</span> ';
+    else if (Date.now() - t.created < 86400000) badges += '<span class="badge badge-new">Новое</span> ';
+    if (t.hot) badges += '<span class="badge badge-hot">Hot</span> ';
+    if (t.locked) badges += '<span class="badge">Закрыто</span> ';
+
+    return '<a class="thread" href="thread.html?id=' + L.esc(t.id) + '">' +
+      '<div>' +
+        '<div class="thread-title">' + badges + L.esc(t.title) + '</div>' +
+        '<div class="thread-meta">' +
+          '<span>' + L.esc(L.boardTitle(t.board)) + '</span>' +
+          '<span>автор: ' + L.esc(t.author) + '</span>' +
+          '<span>' + L.esc(L.ago(t.lastSeen)) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="thread-stats"><b>' + t.posts.length + '</b>сообщ.</div>' +
+      '<div class="lastpost">' + lastCell(t) + '</div>' +
+    '</a>';
+  }
+  window.LegionThreadRow = threadRow;
+
+  /* ---------- поиск ---------- */
+  function renderSearch(query) {
+    var res = L.search(query);
+    L.q('#forumBlock').classList.add('hidden');
+    L.q('#searchBlock').classList.remove('hidden');
+    L.q('#searchCount').textContent = 'запрос: «' + query + '» · найдено ' + res.length;
+    document.title = 'Поиск: ' + query + ' — LEGION';
+    L.q('.crumbs').innerHTML = '<a href="index.html">Форум</a><i>/</i><span class="cur">Поиск</span>';
+    L.q('#searchList').innerHTML = res.length
+      ? res.map(function (t) { return threadRow(t); }).join('')
+      : '<div class="empty"><div class="big">&#128533;</div><p>Ничего не нашлось. Попробуй другой запрос.</p></div>';
+  }
+
+  renderBoards();
+  renderLatest();
+
+  var query = new URLSearchParams(location.search).get('q');
+  if (query) {
+    renderSearch(query);
+    L.q('#headSearchInput').value = query;
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Файлы и сборки — LEGION</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="index.html">
+      <span class="crest">L</span>
+      <span class="brand-txt"><b>LEGION</b><span>CSS v34 Bhop Community</span></span>
+    </a>
+    <nav class="mainnav">
+      <a href="index.html">Форум</a>
+      <a href="files.html" class="is-on">Файлы</a>
+      <a href="rules.html">Правила</a>
+    </nav>
+    <form class="searchbox" id="headSearch">
+      <input id="headSearchInput" type="search" placeholder="Поиск по темам...">
+      <button title="Найти">&#128269;</button>
+    </form>
+    <div class="userbox">
+      <span class="avatar">L</span>
+      <span class="who"><b>login</b><span>Участник</span></span>
+      <a class="btn btn-sm" href="new.html">+ Новая тема</a>
+    </div>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="wrap in">
+    <nav class="crumbs"><a href="index.html">Форум</a><i>/</i><span class="cur">Файлы и сборки</span></nav>
+    <span class="online-now" data-online></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div>
+      <h1>ФАЙЛЫ И СБОРКИ</h1>
+      <p>Обмен конфигами, архивами и демками. Всё, что ты загрузишь, лежит только в
+         твоём браузере и скачивается кнопкой «Скачать» байт в байт.</p>
+    </div>
+    <div class="hero-acts">
+      <span class="btn" title="Количество файлов"><b id="fileCount">0</b>&nbsp;файлов</span>
+      <span class="btn" title="Общий объём"><b id="fileTotal">0</b>&nbsp;всего</span>
+    </div>
+  </section>
+
+  <div class="layout">
+
+    <div class="col">
+      <section class="panel">
+        <div class="panel-head"><h2>Загрузить файл</h2><span class="tail dim">перетащи или выбери</span></div>
+        <div class="panel-body">
+          <div class="drop" id="dropzone">
+            <div class="big">&#128228;</div>
+            <div class="t">Перетащи файлы сюда</div>
+            <div class="s">Архивы, конфиги, демки — всё, чем делятся на форуме</div>
+            <label class="btn btn-primary">
+              Выбрать файлы
+              <input type="file" id="fileInput" multiple hidden>
+            </label>
+            <div class="hint" style="margin-top:12px">
+              Файлы сохраняются локально (IndexedDB). Никуда не отправляются.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Файлы раздела</h2>
+          <span class="tail"><a href="board.html?id=files">обсуждение &rarr;</a></span>
+        </div>
+        <div class="panel-body tight" id="fileList"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Как это работает</h2></div>
+        <div class="panel-body">
+          <ol class="rules">
+            <li>Перетащи файл в зону загрузки или нажми «Выбрать файлы» — можно несколько сразу.</li>
+            <li>Файл появится в списке с меткой <b>мой</b> и двумя кнопками: <b>↓ Скачать</b> и <b>Удалить</b>.</li>
+            <li><b>↓ Скачать</b> отдаёт файл байт в байт, без перепаковки и переименования.</li>
+            <li>Счётчик скачиваний увеличивается при каждом нажатии и сохраняется.</li>
+            <li>Записи с меткой <b>демо</b> — часть форума: вместо архива скачается текстовая
+                заглушка, потому что настоящих сборок в проекте нет.</li>
+          </ol>
+          <div class="alert warn" style="margin-bottom:0">
+            Если файл больше 3&nbsp;МБ, а браузер открыл страницу как локальный файл
+            (<code>file://</code>), хранилище переключится на localStorage с меньшим лимитом.
+            Надёжнее запустить сайт через <code>serve.ps1</code>.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="col side">
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Популярное</h3></div>
+        <div class="panel-body" id="topFiles"></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>О статистике</h3></div>
+        <div class="panel-body"><ul class="stat-list" data-stats></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Сейчас на сайте</h3></div>
+        <div class="panel-body"><ul class="online-list" data-online-list></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Последние темы</h3></div>
+        <div class="panel-body" data-latest></div>
+      </section>
+      <div class="adslot">Место под баннер<br>320 × 100</div>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap in">
+    <span>© <span data-year></span> LEGION — CSS v34 Bhop Community. Демо-проект.</span>
+    <span class="links">
+      <a href="rules.html">Правила</a>
+      <a href="rules.html#faq">FAQ</a>
+      <a href="index.html">Форум</a>
+      <span data-storage-note></span>
+    </span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/files.js"></script>
+<script>
+(function () {
+  var L = window.L, LF = window.LegionFiles;
+
+  function renderTop() {
+    var items = LF.list().slice().sort(function (a, b) { return b.downloads - a.downloads; }).slice(0, 5);
+    L.q('#topFiles').innerHTML = items.map(function (f) {
+      return '<div class="mini-thread">' + L.esc(f.name) +
+             '<span class="m">' + L.esc(L.size(f.size)) + ' · ' + f.downloads + ' скачиваний · ' + L.esc(f.author) + '</span></div>';
+    }).join('') || '<div class="empty"><p>Пока пусто</p></div>';
+  }
+
+  LF.init().then(renderTop);
+
+  // обновляем «Популярное» после любого действия со списком
+  L.q('#fileList').addEventListener('click', function () { setTimeout(renderTop, 80); });
+})();
+</script>
+</body>
+</html>

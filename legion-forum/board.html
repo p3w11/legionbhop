@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Раздел — LEGION</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap bar">
+    <a class="brand" href="index.html">
+      <span class="crest">L</span>
+      <span class="brand-txt"><b>LEGION</b><span>CSS v34 Bhop Community</span></span>
+    </a>
+    <nav class="mainnav">
+      <a href="index.html" class="is-on">Форум</a>
+      <a href="files.html">Файлы</a>
+      <a href="rules.html">Правила</a>
+    </nav>
+    <form class="searchbox" id="headSearch">
+      <input id="headSearchInput" type="search" placeholder="Поиск по темам...">
+      <button title="Найти">&#128269;</button>
+    </form>
+    <div class="userbox">
+      <span class="avatar">L</span>
+      <span class="who"><b>login</b><span>Участник</span></span>
+      <a class="btn btn-sm" href="new.html">+ Новая тема</a>
+    </div>
+  </div>
+</header>
+
+<div class="subbar">
+  <div class="wrap in">
+    <nav class="crumbs" id="crumbs"></nav>
+    <span class="online-now" data-online></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="layout">
+
+    <div class="col">
+      <section class="panel">
+        <div class="panel-head">
+          <h2 id="boardTitle">Раздел</h2>
+          <span class="tail"><a class="btn btn-sm btn-primary" id="newThreadBtn" href="new.html">+ Новая тема</a></span>
+        </div>
+        <div class="panel-body" id="boardDesc"></div>
+        <div class="panel-body tight">
+          <div id="threadList"></div>
+          <div class="pager" id="pager"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Подразделы</h2></div>
+        <div class="panel-body tight" id="subs"></div>
+      </section>
+    </div>
+
+    <aside class="col side">
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>О статистике</h3></div>
+        <div class="panel-body"><ul class="stat-list" data-stats></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Сейчас на сайте</h3></div>
+        <div class="panel-body"><ul class="online-list" data-online-list></ul></div>
+      </section>
+      <section class="panel side-panel">
+        <div class="panel-head"><h3>Последние темы</h3></div>
+        <div class="panel-body" data-latest></div>
+      </section>
+      <div class="adslot">Место под баннер<br>320 × 100</div>
+    </aside>
+
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap in">
+    <span>© <span data-year></span> LEGION — CSS v34 Bhop Community. Демо-проект.</span>
+    <span class="links">
+      <a href="rules.html">Правила</a>
+      <a href="rules.html#faq">FAQ</a>
+      <a href="files.html">Файлы</a>
+      <span data-storage-note></span>
+    </span>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  var L = window.L;
+  var PER = 8;
+
+  function row(t) {
+    var badges = '';
+    if (t.pinned) badges += '<span class="badge badge-pin">Закреплено</span> ';
+    else if (Date.now() - t.created < 86400000) badges += '<span class="badge badge-new">Новое</span> ';
+    if (t.hot) badges += '<span class="badge badge-hot">Hot</span> ';
+    if (t.locked) badges += '<span class="badge">Закрыто</span> ';
+    if (!t.posts.length) badges += '<span class="badge">Без ответов</span> ';
+
+    var last = t.posts[t.posts.length - 1];
+    return '<a class="thread" href="thread.html?id=' + L.esc(t.id) + '">' +
+      '<div>' +
+        '<div class="thread-title">' + badges + L.esc(t.title) + '</div>' +
+        '<div class="thread-meta">' +
+          '<span>автор: ' + L.esc(t.author) + '</span>' +
+          '<span>создана: ' + L.esc(L.ftime(t.created)) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="thread-stats"><b>' + t.posts.length + '</b>сообщ.<b style="margin-top:3px">' + L.num(t.views) + '</b>просм.</div>' +
+      '<div class="lastpost">' +
+        (last ? '<span class="a">' + L.esc(last.author) + ' · ' + L.esc(L.ago(t.lastSeen)) + '</span>' : '<span class="muted">—</span>') +
+      '</div>' +
+    '</a>';
+  }
+
+  function render() {
+    var params = new URLSearchParams(location.search);
+    var id = params.get('id') || 'bhop';
+    var page = parseInt(params.get('page') || '1', 10);
+    var b = L.board(id);
+    if (!b) {
+      L.q('#boardTitle').textContent = 'Раздел не найден';
+      L.q('#threadList').innerHTML = '<div class="empty"><div class="big">&#129300;</div><p>Такого раздела нет. <a href="index.html">Вернуться на главную</a>.</p></div>';
+      return;
+    }
+
+    document.title = b.name + ' — LEGION';
+    L.q('#boardTitle').textContent = b.icon + '  ' + b.name;
+    L.q('#boardDesc').innerHTML = '<p style="margin:0">' + L.esc(b.desc) + '</p>';
+    L.q('#newThreadBtn').href = 'new.html?board=' + encodeURIComponent(id);
+
+    var path = L.boardPath(id);
+    L.q('#crumbs').innerHTML = '<a href="index.html">Форум</a><i>/</i>' +
+      path.map(function (p, i) {
+        return i === path.length - 1
+          ? '<span class="cur">' + L.esc(p.name) + '</span>'
+          : '<a href="board.html?id=' + L.esc(p.id) + '">' + L.esc(p.name) + '</a><i>/</i>';
+      }).join('');
+
+    var list = L.threadsIn(id);
+    var p = L.paginate(list, PER, page);
+    L.q('#threadList').innerHTML = p.slice.length
+      ? p.slice.map(row).join('')
+      : '<div class="empty"><div class="big">&#128533;</div><p>В разделе пока нет тем.</p></div>';
+    L.renderPager(L.q('#pager'), p, 'board.html?id=' + encodeURIComponent(id));
+
+    var subs = L.boards().filter(function (x) { return x.parent === id; });
+    L.q('#subs').innerHTML = subs.length
+      ? subs.map(function (s) {
+          var l = L.threadsIn(s.id);
+          var posts = l.reduce(function (a, t) { return a + t.posts.length; }, 0);
+          var last = l[0];
+          return '<div class="thread">' +
+            '<div>' +
+              '<div class="thread-title"><a href="board.html?id=' + L.esc(s.id) + '">' + s.icon + ' ' + L.esc(s.name) + '</a></div>' +
+              '<div class="thread-meta">' + L.esc(s.desc) + '</div>' +
+            '</div>' +
+            '<div class="thread-stats"><b>' + l.length + '</b>тем<b style="margin-top:3px">' + posts + '</b>сообщ.</div>' +
+            '<div class="lastpost">' + (last ? '<span class="a">' + L.esc(last.title) + '</span>' : '<span class="muted">пусто</span>') + '</div>' +
+          '</div>';
+        }).join('')
+      : '<div class="empty"><p>Подразделов нет.</p></div>';
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
